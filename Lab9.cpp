@@ -94,13 +94,44 @@ private:
 public:
     explicit CoalescedTable(size_t m = 7) : table(m), M(m) {}
 
-    void insert(const Student& s) {
-        // Your code here
+    void insert(const Student& s) { //your code here       
+    int i = hash(s.id);
+
+    if (!table[i].occupied()) {
+        table[i].key = s.id;
+        table[i].value = s;
+        return;
     }
 
+    int freeIndex = findFree();
+
+    if (freeIndex == -1) return;
+
+    table[freeIndex].key = s.id;
+    table[freeIndex].value = s;
+
+    int current = i;
+
+    while (table[current].next != -1) {
+        current = table[current].next;
+    }
+
+    table[current].next = freeIndex;
+}
     
     bool find(int id, Student& out) const {
         // Your code here
+    int i = hash(id);
+
+    while (i != -1) {
+        if (table[i].key == id) {
+            out = table[i].value;
+            return true;
+        }
+
+        i = table[i].next;
+    }
+        
         return false;
     }
 
